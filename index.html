@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduRPG: Quest Pembelajaran Sistem Informasi & TI</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #00adb5;
+            margin-bottom: 5px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid #0f3460;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- STYLES MODUL MATERI --- */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: #0f3460;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: #00adb5;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+
+        .materi-content {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .materi-content h3 {
+            color: #00adb5;
+            margin-top: 15px;
+            border-bottom: 1px solid #00adb5;
+            padding-bottom: 5px;
+        }
+
+        .materi-content ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .btn-start-game {
+            width: 100%;
+            padding: 15px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-start-game:hover {
+            background: #ff5722;
+        }
+
+        /* --- STYLES GAME / ARENA --- */
+        .battle-arena {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .character {
+            text-align: center;
+            width: 45%;
+        }
+
+        .char-sprite {
+            font-size: 70px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .health-bar {
+            width: 100%;
+            background: #333;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #fff;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: #4caf50;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .enemy-health {
+            background: #f44336;
+        }
+
+        .quiz-container {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .question-box {
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: #16213e;
+            color: #fff;
+            border: 1px solid #00adb5;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #00adb5;
+            color: #1a1a2e;
+        }
+
+        .log-box {
+            margin-top: 15px;
+            background: #1a1a2e;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            height: 60px;
+            overflow-y: auto;
+            color: #00adb5;
+        }
+
+        /* Responsive UI */
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>EduRPG: Master IT & Sistem Informasi</h1>
+        <p>Pahami Materi Kisi-Kisi dan Kalahkan Monster dengan Pengetahuanmu!</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- FASE 1: PEMBELAJARAN MATERI -->
+        <div id="materi-section">
+            <h2>Modul Pembelajaran Detail</h2>
+            <p style="margin-bottom: 15px; color: #bbb;">Pilih topik di bawah untuk mempelajari materi sebelum bertarung:</p>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('enterprise')">Sistem Enterprise</button>
+                <button class="tab-btn" onclick="showTab('statistika')">Data & Statistika</button>
+                <button class="tab-btn" onclick="showTab('msi')">Manajemen SI</button>
+                <button class="tab-btn" onclick="showTab('keamanan')">Infrastruktur & Security</button>
+                <button class="tab-btn" onclick="showTab('diskrit')">Logika & Diskrit</button>
+            </div>
+
+            <div id="materi-display" class="materi-content">
+                <!-- Konten dinamis diisi via JavaScript -->
+            </div>
+
+            <button class="btn-start-game" onclick="startGame()">Selesai Membaca & Mulai Game Pertarungan! ⚔️</button>
+        </div>
+
+        <!-- FASE 2: GAME PERTARUNGAN -->
+        <div id="game-section" class="hidden">
+            <div class="battle-arena">
+                <!-- Player -->
+                <div class="character">
+                    <span class="char-sprite">🧙‍♂️</span>
+                    <h3>Pahlawan IT</h3>
+                    <div class="health-bar">
+                        <div id="player-hp" class="health-fill"></div>
+                    </div>
+                    <p id="player-hp-text">HP: 100/100</p>
+                </div>
+
+                <div style="font-size: 24px; font-weight: bold; color: #e94560;">VS</div>
+
+                <!-- Monster -->
+                <div class="character">
+                    <span class="char-sprite" id="monster-sprite">👾</span>
+                    <h3 id="monster-name">Monster Bug & Error</h3>
+                    <div class="health-bar">
+                        <div id="monster-hp" class="health-fill enemy-health"></div>
+                    </div>
+                    <p id="monster-hp-text">HP: 100/100</p>
+                </div>
+            </div>
+
+            <!-- Quiz / Attack Box -->
+            <div class="quiz-container">
+                <div class="question-box" id="question-text">
+                    Pertanyaan kuis akan muncul di sini...
+                </div>
+                <div class="options-grid" id="options-container">
+                    <!-- Opsi jawaban dimasukkan via JS -->
+                </div>
+            </div>
+
+            <div class="log-box" id="game-log">
+                Pertarungan dimulai! Jawab pertanyaan dengan benar untuk menyerang Monster.
+            </div>
+            
+            <button class="tab-btn" style="margin-top: 15px; background: #666;" onclick="backToStudy()">📖 Kembali Baca Materi</button>
+        </div>
+
+    </div>
+
+    <script>
+        // DATA MATERI DETAILsesuai foto kisi-kisi
+        const materiData = {
+            enterprise: `
+                <h3>1. Enterprise Resource Planning (ERP)</h3>
+                <ul>
+                    <li><b>Modul ERP:</b> Terdiri dari Keuangan (Finance), SDM (HR), SCM (Supply Chain), CRM (Customer Relationship), dan Manufaktur.</li>
+                    <li><b>Manfaat ERP:</b> Integrasi data terpusat, efisiensi operasional, pelaporan real-time, dan pengurangan duplikasi data.</li>
+                    <li><b>Batasan Implementasi:</b> Biaya awal sangat tinggi, resistensi perubahan dari staf, dan proses migrasi data yang kompleks.</li>
+                </ul>
+                <h3>2. Supply Chain Management (SCM)</h3>
+                <ul>
+                    <li><b>Konsep SCM:</b> Pengelolaan aliran barang/jasa dari bahan mentah hingga produk akhir sampai ke tangan konsumen.</li>
+                    <li><b>Aliran SCM:</b> Aliran Barang (fisik), Aliran Informasi (pesanan/status), dan Aliran Uang (pembayaran).</li>
+                    <li><b>Upstream vs Downstream:</b> Upstream fokus ke pemasok (supplier), Downstream fokus ke distribusi dan konsumen.</li>
+                    <li><b>Jenis Persediaan:</b> Bahan Baku, Barang Dalam Proses (WIP), dan Barang Jadi.</li>
+                    <li><b>Hambatan:</b> Bullwhip effect, ketidakpastian permintaan, dan keterlambatan pengiriman.</li>
+                </ul>
+                <h3>3. Customer Relationship Management (CRM) & SWOT</h3>
+                <ul>
+                    <li><b>CRM:</b> Strategi mengelola interaksi dengan pelanggan. Jenis: Operasional, Analitis, Kolaboratif.</li>
+                    <li><b>Analisis SWOT:</b> Evaluasi Strength (Kekuatan), Weakness (Kelemahan), Opportunity (Peluang), Threat (Ancaman).</li>
+                    <li><b>Strategi SWOT:</b> SO (Gunakan kekuatan untuk peluang), WO (Atasi kelemahan dengan peluang), ST (Gunakan kekuatan hindari ancaman), WT (Minimalkan kelemahan & hindari ancaman).</li>
+                </ul>
+            `,
+            statistika: `
+                <h3>1. Statistika Deskriptif</h3>
+                <ul>
+                    <li><b>Ukuran Pemusatan Data:</b> Mean (Rata-rata), Median (Nilai Tengah), Modus (Nilai sering muncul).</li>
+                    <li><b>Ukuran Penyebaran Data:</b> Range (Jangkauan), Varians, Standar Deviasi (Simpangan baku), dan IQR (Interquartile Range).</li>
+                </ul>
+                <h3>2. Formula Excel & Visualisasi</h3>
+                <ul>
+                    <li><b>Rumus Excel:</b> AVERAGE, MEDIAN, MODE, MAX & MIN, COUNT (hitung angka), COUNTA (hitung non-kosong), COUNTIF (hitung kriteria tertentu), SUMIF, Pivot Table.</li>
+                    <li><b>Visualisasi Data:</b> Bar Chart (perbandingan), Line Chart (tren waktu), Pie Chart (proporsi), Scatter Plot (korelasi), Histogram (distribusi frekuensi).</li>
+                    <li><b>Kesalahan Visualisasi:</b> Misleading graph, skala sumbu Y yang dimanipulasi/tidak tepat, warna kontras yang membingungkan.</li>
+                </ul>
+                <h3>3. Statistika Inferensial</h3>
+                <ul>
+                    <li><b>Konsep Inferensi:</b> Menarik kesimpulan tentang populasi berdasarkan sampel.</li>
+                    <li><b>Z-Score:</b> Mengukur berapa standar deviasi suatu nilai dari rata-rata ($Z = \frac{X - \mu}{\sigma}$).</li>
+                    <li><b>Outlier:</b> Nilai ekstrim yang menyimpang jauh dari kumpulan data lainnya.</li>
+                </ul>
+            `,
+            msi: `
+                <h3>1. Manajemen Sistem Informasi & Metode Agile</h3>
+                <ul>
+                    <li><b>Transformasi Digital:</b> Integrasi teknologi digital ke seluruh area bisnis. Mengubah operasional dan deliver value ke pelanggan.</li>
+                    <li><b>Metode Agile:</b> Pendekatan pengembangan software yang fleksibel & kolaboratif. Menggunakan framework <b>Scrum</b> (Sprint, Backlog) dan <b>Kanban</b>.</li>
+                </ul>
+                <h3>2. SDLC & Manajemen Proyek TI</h3>
+                <ul>
+                    <li><b>Model SDLC:</b> Waterfall (sekuensial), Prototype (sampel awal), Spiral (berbasis risiko), Agile SDLC.</li>
+                    <li><b>Scheduling & WBS:</b> Work Breakdown Structure membagi proyek menjadi tugas kecil. Penggunaan Critical Path Method (CPM).</li>
+                    <li><b>Manajemen Risiko TI:</b> Identifikasi Risiko, Analisis, Risk Matrix, Mitigasi, dan Monitoring.</li>
+                    <li><b>Audit TI:</b> Mengevaluasi keselamatan aset, integritas data, dan efisiensi sistem (Contoh: COBIT Framework).</li>
+                </ul>
+            `,
+            keamanan: `
+                <h3>1. Pemrograman & IoT</h3>
+                <ul>
+                    <li><b>Program Flow Control:</b> Branching (if, else-if, switch), Looping (for, while, do-while).</li>
+                    <li><b>Function:</b> Method dengan Parameter dan Return Value, serta Rekursi (fungsi memanggil dirinya sendiri).</li>
+                    <li><b>Internet of Things (IoT):</b> Jaringan perangkat fisik terhubung internet. Komponen utama: Sensor (pembaca data) dan Actuator (penggerak fisik).</li>
+                </ul>
+                <h3>2. Cybersecurity, Cryptography & Cloud</h3>
+                <ul>
+                    <li><b>Cybersecurity Threat:</b> Malware, Phishing (penipuan email/link), DDoS (membanjiri traffic), Ransomware (penyanderaan data).</li>
+                    <li><b>Social Engineering:</b> Spear Phishing, Baiting, Pretexting, Tailgating.</li>
+                    <li><b>Enkripsi:</b> Simetris (1 kunci kunci/buka), Asimetris (Public & Private key seperti RSA). Hashing (satu arah/MD5/SHA).</li>
+                    <li><b>Cloud Computing:</b> IaaS (Infrastruktur), PaaS (Platform), SaaS (Software siap pakai).</li>
+                </ul>
+            `,
+            diskrit: `
+                <h3>1. Logika Matematika & Set (Himpunan)</h3>
+                <ul>
+                    <li><b>Logika Predikat:</b> Negasi (NOT), Konjungsi (AND), Disjungsi (OR), Implikasi (IF..THEN), Biimplikasi (IF AND ONLY IF).</li>
+                    <li><b>Hukum De Morgan:</b> $\neg(P \land Q) \equiv \neg P \lor \neg Q$. Tautologi (selalu benar), Kontradiksi (selalu salah).</li>
+                    <li><b>Sets:</b> Operasi Irisan ($\cap$), Gabungan ($\cup$), Subset ($\subseteq$), Power Set ($2^n$).</li>
+                </ul>
+                <h3>2. Kombinatorika & Number Theory</h3>
+                <ul>
+                    <li><b>Number Theory:</b> GCD (FPB), LCM (KPK), Modular Arithmetic ($a \pmod m$).</li>
+                    <li><b>Permutasi & Kombinasi:</b> Permutasi memperhatikan urutan ($P(n,r)$), Kombinasi TIDAK memperhatikan urutan ($C(n,r)$).</li>
+                    <li><b>Pigeonhole Principle:</b> Jika $n$ barang dimasukkan ke $m$ kotak ($n > m$), maka minimal ada 1 kotak berisi lebih dari 1 barang.</li>
+                </ul>
+            `
+        };
+
+        // BANK SOAL GAME BERDASARKAN MATERI
+        const questionBank = [
+            {
+                q: "Modul ERP mana yang berfokus pada aliran barang, stok gudang, dan pasokan manufaktur?",
+                options: ["HR Module", "Finance Module", "Supply Chain Management (SCM)", "CRM Module"],
+                answer: 2
+            },
+            {
+                q: "Apa rumus Excel yang digunakan untuk menghitung rata-rata nilai dalam suatu range?",
+                options: ["SUM()", "AVERAGE()", "COUNT()", "MEDIAN()"],
+                answer: 1
+            },
+            {
+                q: "Dalam Agile Scrum, daftar seluruh fitur/tugas yang harus dikerjakan dalam proyek disebut?",
+                options: ["Sprint Goal", "Product Backlog", "Kanban Board", "WBS"],
+                answer: 1
+            },
+            {
+                q: "Ancaman siber yang mengunci data korban dan meminta tebusan uang disebut...",
+                options: ["Phishing", "DDoS", "Ransomware", "Pretexting"],
+                answer: 2
+            },
+            {
+                q: "Algoritma enkripsi yang menggunakan dua kunci berbeda (Public Key & Private Key) disebut?",
+                options: ["Enkripsi Simetris", "Enkripsi Asimetris", "Hashing", "AES-256"],
+                answer: 1
+            },
+            {
+                q: "Manakah ukuran pemusatan data yang mewakili nilai tengah setelah data diurutkan?",
+                options: ["Mean", "Modus", "Median", "Varians"],
+                answer: 2
+            },
+            {
+                q: "Layanan Cloud tempat pengguna menyewa infrastruktur murni seperti server virtual & storage adalah...",
+                options: ["SaaS", "PaaS", "IaaS", "BaaS"],
+                answer: 2
+            },
+            {
+                q: "Perbedaan utama antara Permutasi dan Kombinasi dalam matematika diskrit adalah?",
+                options: ["Permutasi memperhatikan urutan, Kombinasi tidak", "Kombinasi memperhatikan urutan, Permutasi tidak", "Permutasi khusus angka genap", "Tidak ada perbedaan"],
+                answer: 0
+            }
+        ];
+
+        // GAME STATE
+        let playerHP = 100;
+        let monsterHP = 100;
+        let currentQuestionIndex = 0;
+
+        // LOAD MATERI DEFAULT
+        document.getElementById('materi-display').innerHTML = materiData.enterprise;
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('materi-display').innerHTML = materiData[tabName];
+        }
+
+        function startGame() {
+            document.getElementById('materi-section').classList.add('hidden');
+            document.getElementById('game-section').classList.remove('hidden');
+            resetGame();
+            loadQuestion();
+        }
+
+        function backToStudy() {
+            document.getElementById('game-section').classList.add('hidden');
+            document.getElementById('materi-section').classList.remove('hidden');
+        }
+
+        function resetGame() {
+            playerHP = 100;
+            monsterHP = 100;
+            currentQuestionIndex = 0;
+            updateHPUI();
+            document.getElementById('game-log').innerText = "Pertarungan dimulai! Jawab soal dengan benar untuk mengalahkan monster.";
+        }
+
+        function updateHPUI() {
+            document.getElementById('player-hp').style.width = playerHP + '%';
+            document.getElementById('player-hp-text').innerText = `HP: ${playerHP}/100`;
+            
+            document.getElementById('monster-hp').style.width = monsterHP + '%';
+            document.getElementById('monster-hp-text').innerText = `HP: ${monsterHP}/100`;
+        }
+
+        function loadQuestion() {
+            if (monsterHP <= 0) {
+                document.getElementById('question-text').innerText = "🎉 SELAMAT! Kamu berhasil mengalahkan Monster Bug & Error!";
+                document.getElementById('options-container').innerHTML = `<button class="btn-start-game" onclick="startGame()">Main Lagi 🔄</button>`;
+                return;
+            }
+            if (playerHP <= 0) {
+                document.getElementById('question-text').innerText = "💀 GAME OVER! Kamu kehabisan HP. Pelajari materi lagi!";
+                document.getElementById('options-container').innerHTML = `<button class="btn-start-game" onclick="startGame()">Coba Lagi 🔄</button>`;
+                return;
+            }
+
+            const q = questionBank[currentQuestionIndex];
+            document.getElementById('question-text').innerText = q.q;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            const q = questionBank[currentQuestionIndex];
+            const logBox = document.getElementById('game-log');
+
+            if (selectedIndex === q.answer) {
+                // Jawaban Benar -> Serang Monster
+                const damage = 25;
+                monsterHP = Math.max(0, monsterHP - damage);
+                logBox.innerText = `⚔️ Jawaban BENAR! Kamu menyerang monster sebesar ${damage} DMG!`;
+            } else {
+                // Jawaban Salah -> Diserang Monster
+                const damage = 20;
+                playerHP = Math.max(0, playerHP - damage);
+                logBox.innerText = `❌ Jawaban SALAH! Monster menyerangmu sebesar ${damage} DMG! (Jawaban benar: ${q.options[q.answer]})`;
+            }
+
+            updateHPUI();
+
+            // Pindah ke soal berikutnya
+            currentQuestionIndex = (currentQuestionIndex + 1) % questionBank.length;
+            
+            setTimeout(() => {
+                loadQuestion();
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
